@@ -311,10 +311,6 @@ func BroadcastNode(newNode string, nodes []string) {
 	}
 }
 
-
-
-
-
 //RegisterAndBroadcastNode POST /register-and-broadcast-node
 func (c *Controller) RegisterAndBroadcastNode(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body) // read the body of the request
@@ -346,7 +342,7 @@ func (c *Controller) RegisterAndBroadcastNode(w http.ResponseWriter, r *http.Req
 	}
 
 	// broadcast
-	// BroadcastNode(node.NewNodeURL, c.blockchain.NetworkNodes)
+	BroadcastNode(node.NewNodeURL, c.blockchain.NetworkNodes)
 
 	// register all nodes in new node
 	allNodes := append(c.blockchain.NetworkNodes, c.currentNodeURL)
