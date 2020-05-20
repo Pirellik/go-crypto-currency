@@ -11,9 +11,9 @@ import (
 
 //RegisterTransaction registers a transaction in our blockchain
 func (b *BlockChain) RegisterTransaction(transaction Transaction) bool {
-	transaction.SenderName = strings.ToLower(transaction.SenderName)
-	transaction.RecipientName = strings.ToLower(transaction.RecipientName)
-	transaction.SenderSign = strings.ToLower(transaction.SenderSign)
+	transaction.Sender = strings.ToLower(transaction.Sender)
+	transaction.Recipient = strings.ToLower(transaction.Recipient)
+	transaction.Signature = strings.ToLower(transaction.Signature)
 	b.PendingTransactions = append(b.PendingTransactions, transaction)
 	return true
 }

@@ -2,10 +2,10 @@ package currency
 
 //Transaction ..
 type Transaction struct {
-	SenderName    string  `json:"sendername"`
-	RecipientName string  `json:"recipientname"`
-	Amount        float64 `json:"amount"`
-	SenderSign    string  `json:"sendersign"`
+	Sender    string  `json:"sender"`
+	Recipient string  `json:"recipient"`
+	Amount    float64 `json:"amount"`
+	Signature string  `json:"signature"`
 }
 
 //Block ...
