@@ -35,6 +35,18 @@ var routes = []Route{
 		controller.GetBlockchain,
 	},
 	Route{
+		"GetBlockByBlockId",
+		"GET",
+		"/blockchain/{blockId}",
+		controller.GetBlockByBlockID,
+	},
+	Route{
+		"GetTransactionsByBlockId",
+		"GET",
+		"/blockchain/{blockId}/transactions",
+		controller.GetTransactionsByBlockID,
+	},
+	Route{
 		"RegisterAndBroadcastNode",
 		"POST",
 		"/register-and-broadcast-node",

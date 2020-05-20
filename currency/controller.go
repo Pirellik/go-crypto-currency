@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 //Controller ...
@@ -30,9 +33,41 @@ func (c *Controller) Index(w http.ResponseWriter, r *http.Request) {
 
 //GetBlockchain GET /blockchain
 func (c *Controller) GetBlockchain(w http.ResponseWriter, r *http.Request) {
-	data, _ := json.Marshal(c.blockchain)
+	data, _ := json.Marshal(c.blockchain.Chain)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+	return
+}
+
+//GetBlockByBlockId GET /blockchain/{block_id}
+func (c *Controller) GetBlockByBlockID(w http.ResponseWriter, r *http.Request) {
+	blockId, err := strconv.Atoi(mux.Vars(r)["blockId"])
+	fmt.Println(mux.Vars(r)["blockId"])
+	fmt.Println(blockId)
+	if err != nil || blockId < 1 || blockId > len(c.blockchain.Chain) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	data, _ := json.Marshal(c.blockchain.Chain[blockId-1])
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+	return
+}
+
+//GetTransactionsByBlockID GET /blockchain/{block_id}/transactions
+func (c *Controller) GetTransactionsByBlockID(w http.ResponseWriter, r *http.Request) {
+	blockId, err := strconv.Atoi(mux.Vars(r)["blockId"])
+	fmt.Println(mux.Vars(r)["blockId"])
+	fmt.Println(blockId)
+	if err != nil || blockId < 1 || blockId > len(c.blockchain.Chain) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	data, _ := json.Marshal(c.blockchain.Chain[blockId-1].Transactions)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 	return
