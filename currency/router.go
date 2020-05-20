@@ -47,6 +47,12 @@ var routes = []Route{
 		controller.GetTransactionsByBlockID,
 	},
 	Route{
+		"GetPendingTransactions",
+		"GET",
+		"/pendingTransactions",
+		controller.GetPendingTransactions,
+	},
+	Route{
 		"RegisterAndBroadcastNode",
 		"POST",
 		"/register-and-broadcast-node",

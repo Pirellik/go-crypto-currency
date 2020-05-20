@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -44,8 +43,6 @@ func (c *Controller) GetBlockchain(w http.ResponseWriter, r *http.Request) {
 //GetBlockByBlockId GET /blockchain/{block_id}
 func (c *Controller) GetBlockByBlockID(w http.ResponseWriter, r *http.Request) {
 	blockId, err := strconv.Atoi(mux.Vars(r)["blockId"])
-	fmt.Println(mux.Vars(r)["blockId"])
-	fmt.Println(blockId)
 	if err != nil || blockId < 1 || blockId > len(c.blockchain.Chain) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -60,13 +57,20 @@ func (c *Controller) GetBlockByBlockID(w http.ResponseWriter, r *http.Request) {
 //GetTransactionsByBlockID GET /blockchain/{block_id}/transactions
 func (c *Controller) GetTransactionsByBlockID(w http.ResponseWriter, r *http.Request) {
 	blockId, err := strconv.Atoi(mux.Vars(r)["blockId"])
-	fmt.Println(mux.Vars(r)["blockId"])
-	fmt.Println(blockId)
 	if err != nil || blockId < 1 || blockId > len(c.blockchain.Chain) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	data, _ := json.Marshal(c.blockchain.Chain[blockId-1].Transactions)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+	return
+}
+
+//GetPendingTransactions GET /pendingTransactions
+func (c *Controller) GetPendingTransactions(w http.ResponseWriter, r *http.Request) {
+	data, _ := json.Marshal(c.blockchain.PendingTransactions)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
