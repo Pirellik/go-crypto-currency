@@ -14,7 +14,7 @@ func main() {
 	router := currency.NewRouter(address)
 
 	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
-	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST"})
+	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
 
 	// launch server
 	log.Fatal(http.ListenAndServe(":"+address,
