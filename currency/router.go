@@ -11,7 +11,8 @@ var controller = &Controller{
 	blockchain: &BlockChain{
 		Chain:               []Block{},
 		PendingTransactions: []Transaction{},
-		NetworkNodes:        []string{}}}
+		NetworkNodes:        []string{},
+		MiningReward:        1}}
 
 // Route defines a route
 type Route struct {
@@ -35,6 +36,18 @@ var routes = []Route{
 		controller.GetBlockchain,
 	},
 	Route{
+		"GetAllBlockchainData",
+		"GET",
+		"/allBlockchainData",
+		controller.GetAllBlockchainData,
+	},
+	Route{
+		"GetNetworkNodes",
+		"GET",
+		"/networkNodes",
+		controller.GetNetworkNodes,
+	},
+	Route{
 		"GetBlockByBlockId",
 		"GET",
 		"/blockchain/{blockId}",
@@ -47,10 +60,46 @@ var routes = []Route{
 		controller.GetTransactionsByBlockID,
 	},
 	Route{
+		"GetBalanceByPublicKeyNickname",
+		"GET",
+		"/balance/{nickname}",
+		controller.GetBalanceByPublicKeyNickname,
+	},
+	Route{
+		"GetBalanceByPublicKey",
+		"POST",
+		"/balance",
+		controller.GetBalanceByPublicKey,
+	},
+	Route{
 		"GetPendingTransactions",
 		"GET",
 		"/pendingTransactions",
 		controller.GetPendingTransactions,
+	},
+	Route{
+		"GenerateRsaKeyPair",
+		"POST",
+		"/newRsaKeyPair/{nickname}",
+		controller.GenerateRsaKeyPair,
+	},
+	Route{
+		"GetRsaKeyPairs",
+		"GET",
+		"/rsaKeyPairs",
+		controller.GetRsaKeyPairs,
+	},
+	Route{
+		"DeleteRsaKeyPair",
+		"DELETE",
+		"/deleteRsaKeyPair/{nickname}",
+		controller.DeleteRsaKeyPair,
+	},
+	Route{
+		"RegisterNodeInExistingNetwork",
+		"POST",
+		"/registerNodeInExistingNetwork",
+		controller.RegisterNodeInExistingNetwork,
 	},
 	Route{
 		"RegisterAndBroadcastNode",
@@ -83,9 +132,15 @@ var routes = []Route{
 		controller.RegisterAndBroadcastTransaction,
 	},
 	Route{
+		"MineWithPublicKey",
+		"POST",
+		"/mine",
+		controller.MineWithPublicKey,
+	},
+	Route{
 		"Mine",
 		"GET",
-		"/mine",
+		"/mine/{keyNickname}",
 		controller.Mine,
 	},
 	Route{
