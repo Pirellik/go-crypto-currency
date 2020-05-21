@@ -570,8 +570,6 @@ func (c *Controller) RegisterNodeInExistingNetwork(w http.ResponseWriter, r *htt
 	registerJSON := []byte(payload)
 	MakePostCall(networkNode.NetworkNodeURL+"/register-and-broadcast-node", registerJSON)
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	var resp ResponseToSend
