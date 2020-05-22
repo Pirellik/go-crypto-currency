@@ -257,6 +257,7 @@ func (c *Controller) RegisterTransaction(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	}
+	fmt.Println("SIGNATURE AS BYTES AFTER RECEIVING", tr.Signature)
 
 	success := c.blockchain.RegisterTransaction(tr)
 	if !success {
@@ -309,6 +310,7 @@ func (c *Controller) RegisterAndBroadcastTransaction(w http.ResponseWriter, r *h
 	for _, node := range c.blockchain.NetworkNodes {
 		if node != c.currentNodeURL {
 			trToBroadcast, _ := json.Marshal(tr)
+			fmt.Println("SIGNATURE AS BYTES BEFORE SEND", []byte(tr.Signature))
 			MakePostCall(node+"/transaction", trToBroadcast)
 		}
 	}
@@ -327,7 +329,7 @@ func (c *Controller) Mine(w http.ResponseWriter, r *http.Request) {
 
 	lastBlock := c.blockchain.GetLastBlock()
 	previousBlockHash := lastBlock.Hash
-	tr := Transaction{Sender: "NULL", Recipient: c.blockchain.GetPublicKeyByNickname(keyNickname), Amount: 1, Signature: "mining reward"}
+	tr := Transaction{Sender: "NULL", Recipient: c.blockchain.GetPublicKeyByNickname(keyNickname), Amount: 1, Signature: []byte("mining reward")}
 	success := c.blockchain.RegisterTransaction(tr)
 	if !success {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -380,7 +382,7 @@ func (c *Controller) MineWithPublicKey(w http.ResponseWriter, r *http.Request) {
 
 	lastBlock := c.blockchain.GetLastBlock()
 	previousBlockHash := lastBlock.Hash
-	tr := Transaction{Sender: "NULL", Recipient: key.Public, Amount: 1, Signature: "mining reward"}
+	tr := Transaction{Sender: "NULL", Recipient: key.Public, Amount: 1, Signature: []byte("mining reward")}
 	success := c.blockchain.RegisterTransaction(tr)
 	if !success {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -651,6 +653,9 @@ func (c *Controller) ReceiveNewBlock(w http.ResponseWriter, r *http.Request) {
 	var resp ResponseToSend
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
+
+	fmt.Println("PASKO HASH CHECK", c.blockchain.CheckNewBlockHash(blockReceived))
+	fmt.Println("PASKO TRANS CHECK", c.blockchain.ValidateBlockTransactions(blockReceived))
 
 	// append block to blockchain
 	if c.blockchain.CheckNewBlockHash(blockReceived) && c.blockchain.ValidateBlockTransactions(blockReceived) {

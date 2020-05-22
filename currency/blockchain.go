@@ -28,7 +28,7 @@ func (b *BlockChain) RegisterTransaction(transaction Transaction) bool {
 }
 
 //SignTransaction registers a transaction in our blockchain
-func (b *BlockChain) SignTransaction(transaction Transaction) string {
+func (b *BlockChain) SignTransaction(transaction Transaction) []byte {
 	var keys []RsaKeyPair
 	if fileExists("key_pairs/keys.json") {
 		keys_from_file, _ := ioutil.ReadFile("key_pairs/keys.json")
@@ -47,7 +47,7 @@ func (b *BlockChain) SignTransaction(transaction Transaction) string {
 	trDataJSON, err := json.Marshal(trData)
 	if err != nil {
 		fmt.Println(err)
-		return "failed to sign"
+		return []byte("failed to sign")
 	}
 	hashed := sha256.Sum256(trDataJSON)
 
@@ -55,7 +55,7 @@ func (b *BlockChain) SignTransaction(transaction Transaction) string {
 	if err != nil {
 		panic(err)
 	}
-	return string(signature)
+	return signature
 }
 
 //GetPublicKeyByNickname ...
@@ -76,11 +76,6 @@ func (b *BlockChain) GetPublicKeyByNickname(nickname string) string {
 
 //ValidateTransactionBeforeRegistering validates a transaction
 func (b *BlockChain) ValidateTransactionBeforeRegistering(transaction Transaction) bool {
-	fmt.Println("TRANSACTION", transaction)
-	fmt.Println("BALANCE", b.GetAccBalanceByPublicKey(transaction.Sender))
-	if !b.IsMiningReward(transaction) {
-		fmt.Println("SIGN", b.ValidateSignature(transaction))
-	}
 	if b.IsMiningReward(transaction) {
 		return true
 	} else if b.GetAccBalanceByPublicKey(transaction.Sender) >= transaction.Amount && b.ValidateSignature(transaction) {
@@ -93,13 +88,15 @@ func (b *BlockChain) ValidateTransactionBeforeRegistering(transaction Transactio
 
 //ValidateSignature ...
 func (b *BlockChain) ValidateSignature(tr Transaction) bool {
-	pubKey, _ := b.ParseRsaPublicKeyFromPemStr(tr.Sender)
+	pubKey, err := b.ParseRsaPublicKeyFromPemStr(tr.Sender)
+	fmt.Println("PASKO ERROR", err)
 
 	trData := &TransactionData{Sender: tr.Sender, Recipient: tr.Recipient, Amount: tr.Amount}
 	trDataJSON, _ := json.Marshal(trData)
 	hashed := sha256.Sum256(trDataJSON)
-
-	err := rsa.VerifyPKCS1v15(pubKey, crypto.SHA256, hashed[:], []byte(tr.Signature))
+	fmt.Println("SIGNATURE AS BYTES", tr.Signature)
+	err = rsa.VerifyPKCS1v15(pubKey, crypto.SHA256, hashed[:], tr.Signature)
+	fmt.Println("PASKO final ERR", err)
 	if err == nil {
 		return true
 	} else {
@@ -259,6 +256,9 @@ func (b *BlockChain) ValidateBlockTransactions(newBlock Block) bool {
 	containsExactlyOneMiningReward := b.ContainsExactlyOneMiningReward(newBlock.Transactions)
 	amountsCorrect := b.ValidateTransactionsByTheirAmount(newBlock.Transactions)
 	allSigned := b.ValidateTransactionSignatures(newBlock.Transactions)
+	fmt.Println("PASKO containsExactlyOneMiningReward", containsExactlyOneMiningReward)
+	fmt.Println("PASKO amountsCorrect", amountsCorrect)
+	fmt.Println("PASKO allSigned", allSigned)
 	return containsExactlyOneMiningReward && amountsCorrect && allSigned
 }
 
@@ -281,7 +281,7 @@ func (b *BlockChain) ContainsExactlyOneMiningReward(trs []Transaction) bool {
 func (b *BlockChain) IsMiningReward(tr Transaction) bool {
 	if tr.Amount == b.MiningReward &&
 		strings.ToLower(tr.Sender) == "null" &&
-		strings.ToLower(tr.Signature) == "mining reward" {
+		string(tr.Signature) == "mining reward" {
 		return true
 	} else {
 		return false
@@ -307,7 +307,9 @@ func (b *BlockChain) ValidateTransactionsByTheirAmount(trs []Transaction) bool {
 
 //IsBalanceGreaterThanAmount ...
 func (b *BlockChain) IsBalanceGreaterThanAmount(tr Transaction) bool {
-	if b.GetAccBalanceByPublicKey(strings.ToLower(tr.Sender)) >= tr.Amount {
+	fmt.Println("b.GetAccBalanceByPublicKey(strings.ToLower(tr.Sender))", b.GetAccBalanceByPublicKey(tr.Sender))
+	fmt.Println("tr.Amount", tr.Amount)
+	if b.GetAccBalanceByPublicKey(tr.Sender) >= tr.Amount {
 		return true
 	} else {
 		return false
