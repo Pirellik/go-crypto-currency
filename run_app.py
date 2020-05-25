@@ -2,7 +2,7 @@ import subprocess, sys, os
 
 
 def npm_install():
-    subprocess.Popen(["touch", "npm_install_invoked"])
+    open("npm_install_invoked","w+").close()
     return subprocess.Popen(["npm", "install"], cwd="Go-Crypto-Currency-Client/")
 
 
