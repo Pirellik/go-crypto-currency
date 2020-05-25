@@ -146,11 +146,10 @@ func (c *Controller) GetBalanceByPublicKey(w http.ResponseWriter, r *http.Reques
 func (c *Controller) GetTransactionsByPublicKeyNickname(w http.ResponseWriter, r *http.Request) {
 	nickname := strings.ToLower(mux.Vars(r)["nickname"])
 	publicKey := c.blockchain.GetPublicKeyByNickname(nickname)
-	var trs struct {
-		Transactions []Transaction `json:"transactions"`
-	}
 
-	trs.Transactions = c.blockchain.GetTransactionsByPublicKey(publicKey)
+	var trs []Transaction
+
+	trs = c.blockchain.GetTransactionsByPublicKey(publicKey)
 	data, _ := json.Marshal(trs)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
