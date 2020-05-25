@@ -72,6 +72,12 @@ var routes = []Route{
 		controller.GetBalanceByPublicKey,
 	},
 	Route{
+		"GetTransactionsByPublicKeyNickname",
+		"GET",
+		"/transactions/{nickname}",
+		controller.GetTransactionsByPublicKeyNickname,
+	},
+	Route{
 		"GetPendingTransactions",
 		"GET",
 		"/pendingTransactions",

@@ -156,6 +156,19 @@ func (b *BlockChain) GetAccBalanceByPublicKey(publicKey string) float64 {
 	return balance
 }
 
+//GetTransactionsByPublicKey ...
+func (b *BlockChain) GetTransactionsByPublicKey(publicKey string) []Transaction {
+	var trs []Transaction
+	for _, block := range b.Chain {
+		for _, transaction := range block.Transactions {
+			if transaction.Sender == publicKey || transaction.Recipient == publicKey {
+				trs = append(trs, transaction)
+			}
+		}
+	}
+	return trs
+}
+
 //HashBlock ...
 func (b *BlockChain) HashBlock(previousHash string, currentBlockData string, nonce int) string {
 	h := sha256.New()

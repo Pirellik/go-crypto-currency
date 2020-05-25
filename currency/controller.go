@@ -142,6 +142,22 @@ func (c *Controller) GetBalanceByPublicKey(w http.ResponseWriter, r *http.Reques
 	return
 }
 
+//GetTransactionsByPublicKeyNickname GET /transactions/{nickname}
+func (c *Controller) GetTransactionsByPublicKeyNickname(w http.ResponseWriter, r *http.Request) {
+	nickname := strings.ToLower(mux.Vars(r)["nickname"])
+	publicKey := c.blockchain.GetPublicKeyByNickname(nickname)
+	var trs struct {
+		Transactions []Transaction `json:"transactions"`
+	}
+
+	trs.Transactions = c.blockchain.GetTransactionsByPublicKey(publicKey)
+	data, _ := json.Marshal(trs)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+	return
+}
+
 //GetPendingTransactions GET /pendingTransactions
 func (c *Controller) GetPendingTransactions(w http.ResponseWriter, r *http.Request) {
 	data, _ := json.Marshal(c.blockchain.PendingTransactions)
