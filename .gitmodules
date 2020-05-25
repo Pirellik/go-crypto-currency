@@ -1,0 +1,3 @@
+[submodule "Go-Crypto-Currency-Client"]
+	path = Go-Crypto-Currency-Client
+	url = https://github.com/KingaRojek/Go-Crypto-Currency-Client.git
