@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  go-crypto-1:
+    build:
+      context: ./go-crypto-currency-service
+      dockerfile: Service.Dockerfile
+    container_name: go-crypto-1
+    environment:
+      - SERVICE_PORT=9001
+      - HOST_NAME=go-crypto-1
+    ports:
+      - 9001:9001
+    restart: on-failure
+    volumes:
+      - rsa-keys-vol-1:/app/key_pairs
+  go-crypto-client-1:
+      build:
+        context: ./Go-Crypto-Currency-Client
+        dockerfile: Client.Dockerfile
+      container_name: go-crypto-client-1
+      environment:
+        - FRONTEND_PORT=4201
+        - CONFIG_NO=1
+      ports:
+        - 4201:4201
+  go-crypto-2:
+    build:
+      context: ./go-crypto-currency-service
+      dockerfile: Service.Dockerfile
+    container_name: go-crypto-2
+    environment:
+      - SERVICE_PORT=9002
+      - HOST_NAME=go-crypto-2
+    ports:
+      - 9002:9002
+    restart: on-failure
+    volumes:
+      - rsa-keys-vol-2:/app/key_pairs
+  go-crypto-client-2:
+      build:
+        context: ./Go-Crypto-Currency-Client
+        dockerfile: Client.Dockerfile
+      container_name: go-crypto-client-2
+      environment:
+        - FRONTEND_PORT=4202
+        - CONFIG_NO=2
+      ports:
+        - 4202:4202
+  go-crypto-3:
+    build:
+      context: ./go-crypto-currency-service
+      dockerfile: Service.Dockerfile
+    container_name: go-crypto-3
+    environment:
+      - SERVICE_PORT=9003
+      - HOST_NAME=go-crypto-3
+    ports:
+      - 9003:9003
+    restart: on-failure
+    volumes:
+      - rsa-keys-vol-3:/app/key_pairs
+  go-crypto-client-3:
+      build:
+        context: ./Go-Crypto-Currency-Client
+        dockerfile: Client.Dockerfile
+      container_name: go-crypto-client-3
+      environment:
+        - FRONTEND_PORT=4203
+        - CONFIG_NO=3
+      ports:
+        - 4203:4203
+volumes:
+  rsa-keys-vol-1:
+  rsa-keys-vol-2:
+  rsa-keys-vol-3:
