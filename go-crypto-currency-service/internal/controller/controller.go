@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -170,29 +169,22 @@ func (c *Controller) GetPendingTransactions(w http.ResponseWriter, r *http.Reque
 //GenerateRsaKeyPair POST /newRsaKeyPair/{nickname}
 func (c *Controller) GenerateRsaKeyPair(w http.ResponseWriter, r *http.Request) {
 	nickname := strings.ToLower(mux.Vars(r)["nickname"])
-	fmt.Println("PASKO key 1")
 	// Create the keys
 	priv, pub := c.blockchain.GenerateRsaKeyPair()
-	fmt.Println("PASKO key 2")
 
 	// Export the keys to pem string
 	priv_pem := c.blockchain.ExportRsaPrivateKeyAsPemStr(priv)
 	pub_pem, _ := c.blockchain.ExportRsaPublicKeyAsPemStr(pub)
 
-	fmt.Println("PASKO key 3")
-
 	var keys []currency.RsaKeyPair
 	if utils.CheckIfFileExists("key_pairs/keys.json") {
 		keys_from_file, _ := ioutil.ReadFile("key_pairs/keys.json")
 		_ = json.Unmarshal(keys_from_file, &keys)
+
+		keys = append(keys, currency.RsaKeyPair{Nickname: nickname, PublicKey: pub_pem, PrivateKey: priv_pem})
+		file, _ := json.MarshalIndent(keys, "", " ")
+		_ = ioutil.WriteFile("key_pairs/keys.json", file, 0644)
 	}
-	fmt.Println("PASKO key 4")
-
-	keys = append(keys, currency.RsaKeyPair{Nickname: nickname, PublicKey: pub_pem, PrivateKey: priv_pem})
-	file, _ := json.MarshalIndent(keys, "", " ")
-	fmt.Println("PASKO key 5")
-	_ = ioutil.WriteFile("key_pairs/keys.json", file, 0644)
-
 }
 
 //GetRsaKeyPairs GET /rsaKeyPairs/
@@ -201,23 +193,6 @@ func (c *Controller) GetRsaKeyPairs(w http.ResponseWriter, r *http.Request) {
 	if utils.CheckIfFileExists("key_pairs/keys.json") {
 		keys_from_file, _ := ioutil.ReadFile("key_pairs/keys.json")
 		_ = json.Unmarshal(keys_from_file, &keys)
-	}
-
-	for _, keypair := range keys {
-		// Import the keys from pem string
-		priv_parsed, _ := c.blockchain.ParseRsaPrivateKeyFromPemStr(keypair.PrivateKey)
-		pub_parsed, _ := c.blockchain.ParseRsaPublicKeyFromPemStr(keypair.PublicKey)
-
-		// Export the newly imported keys
-		priv_parsed_pem := c.blockchain.ExportRsaPrivateKeyAsPemStr(priv_parsed)
-		pub_parsed_pem, _ := c.blockchain.ExportRsaPublicKeyAsPemStr(pub_parsed)
-
-		// Check that the exported/imported keys match the original keys
-		if keypair.PrivateKey != priv_parsed_pem || keypair.PublicKey != pub_parsed_pem {
-			fmt.Println("Failure: Export and Import did not result in same Keys")
-		} else {
-			fmt.Println("Success")
-		}
 	}
 
 	data, _ := json.Marshal(keys)
@@ -271,7 +246,6 @@ func (c *Controller) RegisterTransaction(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	}
-	fmt.Println("SIGNATURE AS BYTES AFTER RECEIVING", tr.Signature)
 
 	success := c.blockchain.RegisterTransaction(tr)
 	if !success {
@@ -324,7 +298,6 @@ func (c *Controller) RegisterAndBroadcastTransaction(w http.ResponseWriter, r *h
 	for _, node := range c.blockchain.NetworkNodes {
 		if node != c.currentNodeURL {
 			trToBroadcast, _ := json.Marshal(tr)
-			fmt.Println("SIGNATURE AS BYTES BEFORE SEND", []byte(tr.Signature))
 			MakePostCall(node+"/transaction", trToBroadcast)
 		}
 	}
@@ -618,7 +591,6 @@ func (c *Controller) RegisterAndBroadcastNode(w http.ResponseWriter, r *http.Req
 			return
 		}
 	}
-	fmt.Println("PASKO newNodeURL", node.NewNodeURL)
 
 	var resp ResponseToSend
 	success := c.blockchain.RegisterNode(node.NewNodeURL) // registers the node into the blockchain
@@ -669,9 +641,6 @@ func (c *Controller) ReceiveNewBlock(w http.ResponseWriter, r *http.Request) {
 	var resp ResponseToSend
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-
-	fmt.Println("PASKO HASH CHECK", c.blockchain.CheckNewBlockHash(blockReceived))
-	fmt.Println("PASKO TRANS CHECK", c.blockchain.ValidateBlockTransactions(blockReceived))
 
 	// append block to blockchain
 	if c.blockchain.CheckNewBlockHash(blockReceived) && c.blockchain.ValidateBlockTransactions(blockReceived) {

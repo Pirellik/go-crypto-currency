@@ -16,5 +16,6 @@ RUN go build -o ./bin/currency.d ./cmd/currency.d
 FROM alpine:latest
 WORKDIR /app
 COPY --from=build /app/bin/currency.d .
+RUN mkdir key_pairs && touch key_pairs/keys.json
 
 CMD ["/app/currency.d"]

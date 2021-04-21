@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -48,7 +47,6 @@ func (b *BlockChain) SignTransaction(transaction Transaction) []byte {
 	trData := &TransactionData{Sender: transaction.Sender, Recipient: transaction.Recipient, Amount: transaction.Amount}
 	trDataJSON, err := json.Marshal(trData)
 	if err != nil {
-		fmt.Println(err)
 		return []byte("failed to sign")
 	}
 	hashed := sha256.Sum256(trDataJSON)
@@ -83,7 +81,6 @@ func (b *BlockChain) ValidateTransactionBeforeRegistering(transaction Transactio
 	} else if b.GetAccBalanceByPublicKey(transaction.Sender) >= transaction.Amount && b.ValidateSignature(transaction) {
 		return true
 	} else {
-		fmt.Println("Invalid transaction")
 		return false
 	}
 }
@@ -91,19 +88,12 @@ func (b *BlockChain) ValidateTransactionBeforeRegistering(transaction Transactio
 //ValidateSignature ...
 func (b *BlockChain) ValidateSignature(tr Transaction) bool {
 	pubKey, err := b.ParseRsaPublicKeyFromPemStr(tr.Sender)
-	fmt.Println("PASKO ERROR", err)
 
 	trData := &TransactionData{Sender: tr.Sender, Recipient: tr.Recipient, Amount: tr.Amount}
 	trDataJSON, _ := json.Marshal(trData)
 	hashed := sha256.Sum256(trDataJSON)
-	fmt.Println("SIGNATURE AS BYTES", tr.Signature)
 	err = rsa.VerifyPKCS1v15(pubKey, crypto.SHA256, hashed[:], tr.Signature)
-	fmt.Println("PASKO final ERR", err)
-	if err == nil {
-		return true
-	} else {
-		return false
-	}
+	return err == nil
 }
 
 func contains(s []string, e string) bool {
@@ -271,9 +261,6 @@ func (b *BlockChain) ValidateBlockTransactions(newBlock Block) bool {
 	containsExactlyOneMiningReward := b.ContainsExactlyOneMiningReward(newBlock.Transactions)
 	amountsCorrect := b.ValidateTransactionsByTheirAmount(newBlock.Transactions)
 	allSigned := b.ValidateTransactionSignatures(newBlock.Transactions)
-	fmt.Println("PASKO containsExactlyOneMiningReward", containsExactlyOneMiningReward)
-	fmt.Println("PASKO amountsCorrect", amountsCorrect)
-	fmt.Println("PASKO allSigned", allSigned)
 	return containsExactlyOneMiningReward && amountsCorrect && allSigned
 }
 
@@ -322,8 +309,6 @@ func (b *BlockChain) ValidateTransactionsByTheirAmount(trs []Transaction) bool {
 
 //IsBalanceGreaterThanAmount ...
 func (b *BlockChain) IsBalanceGreaterThanAmount(tr Transaction) bool {
-	fmt.Println("b.GetAccBalanceByPublicKey(strings.ToLower(tr.Sender))", b.GetAccBalanceByPublicKey(tr.Sender))
-	fmt.Println("tr.Amount", tr.Amount)
 	if b.GetAccBalanceByPublicKey(tr.Sender) >= tr.Amount {
 		return true
 	} else {
@@ -342,12 +327,10 @@ func (b *BlockChain) ChainIsValid() bool {
 		currentBlockDataAsStr := base64.URLEncoding.EncodeToString(currentBlockDataAsByteArray)
 		blockHash := b.HashBlock(prevBlock.Hash, currentBlockDataAsStr, currentBlock.Nonce)
 		if blockHash[0:3] != "000" {
-			fmt.Println("DUPA")
 			return false
 		}
 
 		if currentBlock.PreviousHash != prevBlock.Hash {
-			fmt.Println("DUPA")
 			return false
 		}
 
@@ -358,7 +341,7 @@ func (b *BlockChain) ChainIsValid() bool {
 	correctNonce := genesisBlock.Nonce == 100
 	correctPreviousHash := genesisBlock.PreviousHash == "0"
 	correctHash := genesisBlock.Hash == "0"
-	correctBets := len(genesisBlock.Transactions) == 0
+	correctTransactions := len(genesisBlock.Transactions) == 0
 
-	return (correctNonce && correctPreviousHash && correctHash && correctBets)
+	return (correctNonce && correctPreviousHash && correctHash && correctTransactions)
 }

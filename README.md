@@ -17,5 +17,4 @@ To register single node in other's node network go to `Network nodes / Register 
 - http://go-crypto-2:9002 to register in Node 2's network
 - http://go-crypto-3:9003 to register in Node 3's network
 
-To stop the containers use  `Ctrl+C`
-Have fun!
+To stop the containers use  `Ctrl+C`. Have fun!
