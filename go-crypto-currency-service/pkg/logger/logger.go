@@ -1,23 +1,23 @@
 package logger
 
 import (
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
-func Logger(inner http.Handler, name string) http.Handler {
+func LoggingInterceptor(inner http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
 		inner.ServeHTTP(w, r)
 
-		log.Printf(
-			"%s\t%s\t%s\t%s",
-			r.Method,
-			r.RequestURI,
-			name,
-			time.Since(start),
-		)
+		log.Info().
+			Str("host", r.Host).
+			Str("method", r.Method).
+			Str("requestURI", r.RequestURI).
+			Dur("responseTime", time.Since(start)).
+			Send()
 	})
 }

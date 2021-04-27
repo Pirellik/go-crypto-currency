@@ -23,7 +23,7 @@ type BlockChain struct {
 	Chain               []Block       `json:"chain"`
 	PendingTransactions []Transaction `json:"pending_transactions"`
 	NetworkNodes        []string      `json:"network_nodes"`
-	MiningReward        float64       `json:"mining_reward"`
+	MiningRewardAmount  float64       `json:"mining_reward"`
 }
 
 //BlockData ...
@@ -39,8 +39,8 @@ type TransactionData struct {
 	Amount    float64 `json:"amount"`
 }
 
-//RsaKeyPair ...
-type RsaKeyPair struct {
+//RSAKeyPair ...
+type RSAKeyPair struct {
 	Nickname   string `json:"nickname"`
 	PrivateKey string `json:"private_key"`
 	PublicKey  string `json:"public_key"`

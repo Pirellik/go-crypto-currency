@@ -3,172 +3,143 @@ package controller
 import (
 	"net/http"
 
-	"github.com/Pirellik/go-crypto-currency/go-crypto-currency-service/pkg/currency"
 	"github.com/Pirellik/go-crypto-currency/go-crypto-currency-service/pkg/logger"
 
 	"github.com/gorilla/mux"
 )
 
-var controller = &Controller{
-	blockchain: &currency.BlockChain{
-		Chain:               []currency.Block{},
-		PendingTransactions: []currency.Transaction{},
-		NetworkNodes:        []string{},
-		MiningReward:        1}}
-
 // Route defines a route
 type Route struct {
-	Name        string
 	Method      string
 	Pattern     string
 	HandlerFunc http.HandlerFunc
 }
 
-var routes = []Route{
-	Route{
-		"Index",
-		"GET",
-		"/",
-		controller.Index,
-	},
-	Route{
-		"GetBlockchain",
-		"GET",
-		"/blockchain",
-		controller.GetBlockchain,
-	},
-	Route{
-		"GetAllBlockchainData",
-		"GET",
-		"/allBlockchainData",
-		controller.GetAllBlockchainData,
-	},
-	Route{
-		"GetNetworkNodes",
-		"GET",
-		"/networkNodes",
-		controller.GetNetworkNodes,
-	},
-	Route{
-		"GetBlockByBlockId",
-		"GET",
-		"/blockchain/{blockId}",
-		controller.GetBlockByBlockID,
-	},
-	Route{
-		"GetTransactionsByBlockId",
-		"GET",
-		"/blockchain/{blockId}/transactions",
-		controller.GetTransactionsByBlockID,
-	},
-	Route{
-		"GetBalanceByPublicKeyNickname",
-		"GET",
-		"/balance/{nickname}",
-		controller.GetBalanceByPublicKeyNickname,
-	},
-	Route{
-		"GetBalanceByPublicKey",
-		"POST",
-		"/balance",
-		controller.GetBalanceByPublicKey,
-	},
-	Route{
-		"GetTransactionsByPublicKeyNickname",
-		"GET",
-		"/transactions/{nickname}",
-		controller.GetTransactionsByPublicKeyNickname,
-	},
-	Route{
-		"GetPendingTransactions",
-		"GET",
-		"/pendingTransactions",
-		controller.GetPendingTransactions,
-	},
-	Route{
-		"GenerateRsaKeyPair",
-		"POST",
-		"/newRsaKeyPair/{nickname}",
-		controller.GenerateRsaKeyPair,
-	},
-	Route{
-		"GetRsaKeyPairs",
-		"GET",
-		"/rsaKeyPairs",
-		controller.GetRsaKeyPairs,
-	},
-	Route{
-		"DeleteRsaKeyPair",
-		"DELETE",
-		"/deleteRsaKeyPair/{nickname}",
-		controller.DeleteRsaKeyPair,
-	},
-	Route{
-		"RegisterNodeInExistingNetwork",
-		"POST",
-		"/registerNodeInExistingNetwork",
-		controller.RegisterNodeInExistingNetwork,
-	},
-	Route{
-		"RegisterAndBroadcastNode",
-		"POST",
-		"/register-and-broadcast-node",
-		controller.RegisterAndBroadcastNode,
-	},
-	Route{
-		"RegisterNode",
-		"POST",
-		"/register-node",
-		controller.RegisterNode,
-	},
-	Route{
-		"RegisterNodesBulk",
-		"POST",
-		"/register-nodes-bulk",
-		controller.RegisterNodesBulk,
-	},
-	Route{
-		"RegisterTransaction",
-		"POST",
-		"/transaction",
-		controller.RegisterTransaction,
-	},
-	Route{
-		"RegisterAndBroadcastTransaction",
-		"POST",
-		"/transaction/broadcast",
-		controller.RegisterAndBroadcastTransaction,
-	},
-	Route{
-		"MineWithPublicKey",
-		"POST",
-		"/mine",
-		controller.MineWithPublicKey,
-	},
-	Route{
-		"Mine",
-		"GET",
-		"/mine/{keyNickname}",
-		controller.Mine,
-	},
-	Route{
-		"ReceiveNewBlock",
-		"POST",
-		"/receive-new-block",
-		controller.ReceiveNewBlock,
-	},
-	Route{
-		"Consensus",
-		"GET",
-		"/consensus",
-		controller.Consensus,
-	},
+func getRoutes(controller *Controller) []Route {
+	return []Route{
+		{
+			"GET",
+			"/",
+			controller.Index,
+		},
+		{
+			"GET",
+			"/blockchain",
+			controller.GetBlockchain,
+		},
+		{
+			"GET",
+			"/allBlockchainData",
+			controller.GetAllBlockchainData,
+		},
+		{
+			"GET",
+			"/networkNodes",
+			controller.GetNetworkNodes,
+		},
+		{
+			"GET",
+			"/blockchain/{blockId}",
+			controller.GetBlockByBlockID,
+		},
+		{
+			"GET",
+			"/blockchain/{blockId}/transactions",
+			controller.GetTransactionsByBlockID,
+		},
+		{
+			"GET",
+			"/balance/{nickname}",
+			controller.GetBalanceByPublicKeyNickname,
+		},
+		{
+			"POST",
+			"/balance",
+			controller.GetBalanceByPublicKey,
+		},
+		{
+			"GET",
+			"/transactions/{nickname}",
+			controller.GetTransactionsByPublicKeyNickname,
+		},
+		{
+			"GET",
+			"/pendingTransactions",
+			controller.GetPendingTransactions,
+		},
+		{
+			"POST",
+			"/newRsaKeyPair/{nickname}",
+			controller.GenerateRSAKeyPair,
+		},
+		{
+			"GET",
+			"/rsaKeyPairs",
+			controller.GetRSAKeyPairs,
+		},
+		{
+			"DELETE",
+			"/deleteRsaKeyPair/{nickname}",
+			controller.DeleteRSAKeyPair,
+		},
+		{
+			"POST",
+			"/registerNodeInExistingNetwork",
+			controller.RegisterNodeInExistingNetwork,
+		},
+		{
+			"POST",
+			"/register-and-broadcast-node",
+			controller.RegisterAndBroadcastNode,
+		},
+		{
+			"POST",
+			"/register-node",
+			controller.RegisterNode,
+		},
+		{
+			"POST",
+			"/register-nodes-bulk",
+			controller.RegisterNodesBulk,
+		},
+		{
+			"POST",
+			"/transaction",
+			controller.RegisterTransaction,
+		},
+		{
+			"POST",
+			"/transaction/broadcast",
+			controller.RegisterAndBroadcastTransaction,
+		},
+		{
+			"POST",
+			"/mine",
+			controller.MineWithPublicKey,
+		},
+		{
+			"GET",
+			"/mine/{keyNickname}",
+			controller.Mine,
+		},
+		{
+			"POST",
+			"/receive-new-block",
+			controller.ReceiveNewBlock,
+		},
+		{
+			"GET",
+			"/consensus",
+			controller.Consensus,
+		},
+	}
 }
 
 //NewRouter configures a new router to the API
 func NewRouter(nodeAddress string) *mux.Router {
+	controller := NewController(nodeAddress)
+	routes := getRoutes(&controller)
 	router := mux.NewRouter().StrictSlash(true)
-	controller.currentNodeURL = nodeAddress
 
 	// create Genesis block
 	controller.blockchain.CreateNewBlock(100, "0", "0")
@@ -176,12 +147,11 @@ func NewRouter(nodeAddress string) *mux.Router {
 	for _, route := range routes {
 		var handler http.Handler
 		handler = route.HandlerFunc
-		handler = logger.Logger(handler, route.Name)
+		handler = logger.LoggingInterceptor(handler)
 
 		router.
 			Methods(route.Method).
 			Path(route.Pattern).
-			Name(route.Name).
 			Handler(handler)
 
 	}
