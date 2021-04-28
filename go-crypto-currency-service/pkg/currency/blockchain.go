@@ -210,12 +210,13 @@ func (b *BlockChain) ChainIsValid() bool {
 			log.Error().Err(err).Msg("failed to marshal block data")
 			return false
 		}
-		currentBlockDataAsStr := base64.URLEncoding.EncodeToString(currentBlockDataAsByteArray)
-		blockHash := b.HashBlock(prevBlock.Hash, currentBlockDataAsStr, currentBlock.Nonce)
+		blockHash := b.HashBlock(prevBlock.Hash, string(currentBlockDataAsByteArray), currentBlock.Nonce)
 		if blockHash[0:len(miningDifficulty)] != miningDifficulty {
+			log.Info().Str("blockHash", blockHash).Msg("incorrect hash")
 			return false
 		}
 		if currentBlock.PreviousHash != prevBlock.Hash {
+			log.Info().Msg("invalid previous block hash")
 			return false
 		}
 		i = i + 1

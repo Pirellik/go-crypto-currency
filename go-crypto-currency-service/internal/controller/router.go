@@ -29,12 +29,12 @@ func getRoutes(controller *Controller) []Route {
 		},
 		{
 			"GET",
-			"/allBlockchainData",
+			"/all-blockchain-data",
 			controller.GetAllBlockchainData,
 		},
 		{
 			"GET",
-			"/networkNodes",
+			"/network-nodes",
 			controller.GetNetworkNodes,
 		},
 		{
@@ -64,27 +64,27 @@ func getRoutes(controller *Controller) []Route {
 		},
 		{
 			"GET",
-			"/pendingTransactions",
+			"/pending-transactions",
 			controller.GetPendingTransactions,
 		},
 		{
 			"POST",
-			"/newRsaKeyPair/{nickname}",
+			"/rsa-key-pairs/{nickname}",
 			controller.GenerateRSAKeyPair,
 		},
 		{
 			"GET",
-			"/rsaKeyPairs",
+			"/rsa-key-pairs",
 			controller.GetRSAKeyPairs,
 		},
 		{
 			"DELETE",
-			"/deleteRsaKeyPair/{nickname}",
+			"/rsa-key-pairs/{nickname}",
 			controller.DeleteRSAKeyPair,
 		},
 		{
 			"POST",
-			"/registerNodeInExistingNetwork",
+			"/register-in-existing-network",
 			controller.RegisterNodeInExistingNetwork,
 		},
 		{

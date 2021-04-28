@@ -48,15 +48,8 @@ func NewRSAKeyPair(nickname string) (*RSAKeyPair, error) {
 }
 
 func (kp *RSAKeyPair) SaveToFile() error {
-	var keys []RSAKeyPair
-	if !utils.CheckIfFileExists(keysFilePath) {
-		return errKeysFileNotPresent
-	}
-	keys_from_file, err := ioutil.ReadFile(keysFilePath)
+	keys, err := GetRSAKeyPairsFromFile()
 	if err != nil {
-		return err
-	}
-	if err := json.Unmarshal(keys_from_file, &keys); err != nil {
 		return err
 	}
 	keys = append(keys, *kp)
@@ -87,15 +80,8 @@ func GetRSAKeyPairsFromFile() ([]RSAKeyPair, error) {
 
 //GetPublicKeyByNickname ...
 func GetPublicKeyByNickname(nickname string) (string, error) {
-	if !utils.CheckIfFileExists(keysFilePath) {
-		return "", errKeysFileNotPresent
-	}
-	keysFromFile, err := os.ReadFile(keysFilePath)
+	keys, err := GetRSAKeyPairsFromFile()
 	if err != nil {
-		return "", err
-	}
-	var keys []RSAKeyPair
-	if err := json.Unmarshal(keysFromFile, &keys); err != nil {
 		return "", err
 	}
 
@@ -108,15 +94,8 @@ func GetPublicKeyByNickname(nickname string) (string, error) {
 }
 
 func DeleteRSAKeyPair(nickname string) error {
-	if !utils.CheckIfFileExists(keysFilePath) {
-		return errKeysFileNotPresent
-	}
-	keys_from_file, err := os.ReadFile(keysFilePath)
+	keys, err := GetRSAKeyPairsFromFile()
 	if err != nil {
-		return err
-	}
-	var keys []RSAKeyPair
-	if err := json.Unmarshal(keys_from_file, &keys); err != nil {
 		return err
 	}
 	for index, pair := range keys {
@@ -134,15 +113,8 @@ func DeleteRSAKeyPair(nickname string) error {
 
 //SignTransaction generate signature for a transaction using proper key
 func SignTransaction(transaction Transaction) ([]byte, error) {
-	if !utils.CheckIfFileExists(keysFilePath) {
-		return nil, errKeysFileNotPresent
-	}
-	keys_from_file, err := os.ReadFile(keysFilePath)
+	keys, err := GetRSAKeyPairsFromFile()
 	if err != nil {
-		return nil, err
-	}
-	var keys []RSAKeyPair
-	if err := json.Unmarshal(keys_from_file, &keys); err != nil {
 		return nil, err
 	}
 
